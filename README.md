@@ -1,3 +1,38 @@
+# Real-Time Chat Application
+
+## Overview
+This is a real-time chat application built with Node.js, Express, Socket.io, and React. It supports multiple chat rooms, private messaging, file/image sharing, read receipts, typing indicators, unread message counts, browser notifications, sound notifications, message pagination, and message search. The application is designed to provide a smooth user experience with proper error handling and a responsive design that works seamlessly on both desktop and mobile devices.
+
+## Features Implemented
+- **Multiple Chat Rooms**: Users can join predefined rooms (general, support, random) with room-specific messaging.
+- **Private Messaging**: Users can send private messages to specific users.
+- **File/Image Sharing**: Supports uploading and sharing images (JPEG, PNG, GIF) up to 5MB.
+- **Read Receipts**: Displays the number of users who have read each message.
+- **Typing Indicators**: Shows when users are typing in the current room.
+- **Online/Offline Status**: Displays real-time user status with join/leave notifications.
+- **Unread Message Count**: Shows unread message counts for rooms not currently viewed.
+- **Browser Notifications**: Uses the Web Notifications API to alert users of new messages.
+- **Sound Notifications**: Plays a sound for new messages (requires `notification.mp3` in `client/public/`).
+- **Message Pagination**: Loads older messages in batches of 20 with a "Load More" button.
+- **Message Search**: Allows users to search messages within the current room.
+- **Reconnection Logic**: Automatically reconnects with up to 5 attempts if the connection is lost.
+- **Responsive Design**: Mobile-first design using Tailwind CSS, with a sidebar layout on desktop and stacked layout on mobile.
+- **Error Handling**: Includes validation for file uploads and network errors.
+- **Performance Optimization**: Limits stored messages to 100 per room to prevent memory issues and uses Socket.io rooms for efficient messaging.
+
+## Setup Instructions
+1. **Clone the Repository**:
+   ```bash
+   git clone <your-repo-url>
+
+
+
+
+
+
+
+
+
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=19929257&assignment_repo_type=AssignmentRepo)
 # Real-Time Chat Application with Socket.io
 
