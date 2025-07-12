@@ -10,6 +10,7 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+app.use(cors());
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
@@ -37,6 +38,7 @@ const upload = multer({
     if (extname && mimetype) {
       return cb(null, true);
     }
+    console.error('File rejected:', file.originalname, file.mimetype);
     cb(new Error('Images only (jpeg, jpg, png, gif)!'));
   },
 });
@@ -53,9 +55,11 @@ const rooms = ['general', 'support', 'random'];
 // File upload route
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (req.file) {
+    console.log('File uploaded:', req.file.filename);
     res.json({ filename: req.file.filename });
   } else {
-    res.status(400).json({ error: 'File upload failed' });
+    console.error('Upload failed:', req.fileValidationError || 'No file received');
+    res.status(400).json({ error: req.fileValidationError || 'File upload failed' });
   }
 });
 
@@ -84,6 +88,7 @@ app.get('/api/users/:room', (req, res) => {
 });
 
 app.get('/api/rooms', (req, res) => {
+  console.log('Serving /api/rooms');
   res.json(rooms);
 });
 
@@ -127,6 +132,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('send_file', ({ filename, room }) => {
+    console.log('Received send_file:', { filename, room });
     const message = {
       id: Date.now(),
       sender: users[socket.id]?.username || 'Anonymous',

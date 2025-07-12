@@ -12,7 +12,8 @@ const Chat = () => {
     sendPrivateMessage, 
     setTyping, 
     typingUsers, 
-    users 
+    users,
+    socket // Add socket to destructured values
   } = useSocket();
   const [message, setMessage] = useState('');
   const [privateMessage, setPrivateMessage] = useState('');
@@ -25,7 +26,8 @@ const Chat = () => {
   const loadMoreMessages = async () => {
     try {
       console.log(`Loading more messages for room: ${currentRoom}, page: ${page + 1}`);
-      const res = await fetch(`/api/messages/${currentRoom}?page=${page + 1}&limit=20`);
+      const res = await fetch(`http://localhost:5000/api/messages/${currentRoom}?page=${page + 1}&limit=20`);
+      console.log('Messages response:', res.status, res.statusText);
       const data = await res.json();
       setMessages((prev) => [...data.messages, ...prev]);
       setPage(data.page);
@@ -69,12 +71,12 @@ const Chat = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     messages.forEach((msg) => {
-      console.log('Processing message:', msg);
-      if (!readReceipts[msg.id]?.includes(socket.id)) {
+      console.log('Processing message:', JSON.stringify(msg, null, 2));
+      if (socket && !readReceipts[msg.id]?.includes(socket.id)) {
         markMessageRead(msg.id);
       }
     });
-  }, [messages, readReceipts]);
+  }, [messages, readReceipts, socket, markMessageRead]);
 
   return (
     <div className="flex-1 flex flex-col p-4 overflow-auto bg-gray-50">
@@ -106,7 +108,7 @@ const Chat = () => {
                   src={`http://localhost:5000${msg.file}`}
                   alt="Shared file"
                   className="max-w-xs my-2 rounded-md"
-                  onError={(e) => console.error('Image load error:', msg.file)}
+                  onError={(e) => console.error('Image load error:', `http://localhost:5000${msg.file}`)}
                 />
                 <div className="text-xs text-gray-500">
                   {new Date(msg.timestamp).toLocaleTimeString()}

@@ -1,33 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { useSocket } from '../socket/socket';
+import React, { useState, useEffect } from 'react';
+   import { useSocket } from '../socket/socket';
 
-const RoomSelector = () => {
-  const { joinRoom, currentRoom, unreadCounts } = useSocket();
-  const [rooms, setRooms] = useState([]);
+   const RoomSelector = () => {
+     const { currentRoom, joinRoom, isConnected } = useSocket();
+     const [rooms, setRooms] = useState([]);
+     const [selectedRoom, setSelectedRoom] = useState(currentRoom);
 
-  useEffect(() => {
-    fetch('/api/rooms')
-      .then((res) => res.json())
-      .then((data) => setRooms(data))
-      .catch((err) => console.error('Error fetching rooms:', err));
-  }, []);
+     useEffect(() => {
+       const fetchRooms = async () => {
+         try {
+           console.log('Fetching rooms from http://localhost:5000/api/rooms');
+           const res = await fetch('http://localhost:5000/api/rooms');
+           console.log('Rooms response:', res.status, res.statusText);
+           const text = await res.text();
+           console.log('Response text:', text);
+           const data = JSON.parse(text);
+           setRooms(data);
+         } catch (err) {
+           console.error('Error fetching rooms:', err);
+         }
+       };
+       fetchRooms();
+     }, []);
 
-  return (
-    <div className="space-y-2">
-      <h3 className="text-lg font-semibold">Chat Rooms</h3>
-      {rooms.map((room) => (
-        <button
-          key={room}
-          onClick={() => joinRoom(room)}
-          className={`w-full text-left p-2 rounded-md ${
-            currentRoom === room ? 'bg-blue-500 text-white' : 'bg-gray-200'
-          }`}
-        >
-          {room} {unreadCounts[room] > 0 && `(${unreadCounts[room]})`}
-        </button>
-      ))}
-    </div>
-  );
-};
+     const handleRoomChange = (e) => {
+       const newRoom = e.target.value;
+       setSelectedRoom(newRoom);
+       if (isConnected && newRoom) {
+         joinRoom(newRoom);
+       }
+     };
 
-export default RoomSelector;
+     return (
+       <div className="p-4 border-b">
+         <h3 className="text-lg font-semibold mb-2">Select Room</h3>
+         <select
+           value={selectedRoom}
+           onChange={handleRoomChange}
+           className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+           disabled={!isConnected}
+         >
+           <option value="">Select a room</option>
+           {rooms.map((room) => (
+             <option key={room} value={room}>
+               {room}
+             </option>
+           ))}
+         </select>
+       </div>
+     );
+   };
+
+   export default RoomSelector;

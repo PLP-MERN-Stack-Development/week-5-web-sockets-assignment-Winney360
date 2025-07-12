@@ -67,6 +67,7 @@ export const useSocket = () => {
     };
 
     const onReceiveMessage = (message) => {
+      console.log('Received message:', JSON.stringify(message, null, 2));
       setLastMessage(message);
       setMessages((prev) => [...prev, message]);
       if (message.room !== currentRoom) {
@@ -83,6 +84,7 @@ export const useSocket = () => {
         audio.play().catch((err) => console.error('Audio playback error:', err));
       }
     };
+    socket.on('receive_message', onReceiveMessage);
 
     const onPrivateMessage = (message) => {
       setLastMessage(message);
